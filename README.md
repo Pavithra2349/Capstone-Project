@@ -47,4 +47,69 @@ MAPE will be used to evaluate error metrics.
 Is patient attendance rate directly proportional to the input resources (eg nurses) allocated by the hospital mangement?
 If the rate is not directly proportional I study attendance pattern and try to make them proportional by introducing model for estimation purposes.
 
+---
+title: "SURVIVAL ANALYSIS"
+Code used:
+
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+INTRODUCTION OF MY PROJECT,
+Time series analysis of patients.
+
+
+
+```{r}
+library(forecast)
+library(tseries)
+library(ggplot2)
+
+data1=c(621,453,657,432,567,453,234,687,691,688,691,510,534,718,732,738,789,610,631,619,551,618,639,621,589,436,492,470,585,534,619,624,789,639,694,711,834,591,414,614,501,572,619,408,562,449,397,393,390,427,415,497,602,906,800,613,713,516,418)
+data1
+k=ts(data1, start = c(2018), frequency = 12)
+k
+autoplot(k)
+ #####test for stationarity
+adf.test(k)
+ ###our data is stationary
+acf(k)
+pacf(k)
+kmodel=auto.arima(k, ic="aic", trace = TRUE)
+kmodel=auto.arima(k, ic="bic", trace = TRUE)
+kmodel=auto.arima(k, ic="aicc", trace = TRUE)
+kmodel
+
+l=kmodel$residuals
+hist(kmodel$residuals)
+qplot(kmodel$residuals, geom = "histogram")
+
+
+
+acf(ts(kmodel$residuals))
+pacf(ts(kmodel$residuals))
+
+myforecast=forecast(kmodel, level = c(95), h=20)
+myforecast
+plot(myforecast)
+
+summary(myforecast)
+
+Box.test(myforecast$resid, lag = 4, type = "Ljung-Box")
+Box.test(myforecast$resid, lag = 10, type = "Ljung-Box")
+Box.test(myforecast$resid, lag = 20, type = "Ljung-Box")
+Box.test(myforecast$resid, lag = 30, type = "Ljung-Box")
+Box.test(myforecast$resid, lag = 35, type = "Ljung-Box")
+
+```
+
+
 
